@@ -37,6 +37,9 @@ public class AuthController {
     @Autowired
     JwtUtils jwtUtils;
 
+    @Autowired
+    com.inventory.system.service.EmailService emailService;
+
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginRequest loginRequest) {
 
@@ -101,6 +104,13 @@ public class AuthController {
 
         user.setRoles(roles);
         userRepository.save(user);
+
+        // Send Welcome Email
+        emailService.sendSimpleMessage(
+                user.getEmail(),
+                "Welcome to Inventory System",
+                "Hello " + user.getUsername()
+                        + ",\n\nYour account has been successfully created.\n\nBest Regards,\nInventory Team");
 
         return ResponseEntity.ok("User registered successfully!");
     }
